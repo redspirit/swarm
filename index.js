@@ -29,7 +29,7 @@ class DockSwarm {
 
         // Обновляем сервис с новым образом
         const updateOptions = {
-            version: serviceInfo.Version.Index,
+            Version: serviceInfo.Version.Index,
             AuthConfig: this.authconfig,
             TaskTemplate: {
                 ContainerSpec: {
