@@ -7,7 +7,7 @@ class DockSwarm {
         this.authconfig = {
             username: conf.username || '',
             password: conf.password || '',
-            auth: conf.auth || '',
+            // auth: conf.auth || '',
             serveraddress: conf.serveraddress || '',
         };
 
@@ -25,23 +25,19 @@ class DockSwarm {
         const serviceInfo = services.find((service) => service.Spec.Name === serviceName);
         if (!serviceInfo) throw new Error(`Service with name "${serviceName}" not found.`);
 
-        const pullStdout = await this.pullImage(newImageName);
         const service = this.docker.getService(serviceInfo.ID);
 
         // Обновляем сервис с новым образом
-        await service.update({
+        const updateOptions = {
             version: serviceInfo.Version.Index,
-            ...serviceInfo.Spec,
+            AuthConfig: this.authconfig,
             TaskTemplate: {
-                ...serviceInfo.Spec.TaskTemplate,
                 ContainerSpec: {
-                    ...serviceInfo.Spec.TaskTemplate.ContainerSpec,
                     Image: newImageName,
                 },
             },
-        });
-
-        return pullStdout;
+        };
+        return service.update(updateOptions);
     }
 }
 
