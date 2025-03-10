@@ -1,0 +1,15 @@
+{
+  "name": "dock-swarm",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "RedSpirit",
+  "homepage": "https://github.com/redspirit/swarm",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "dockerode": "^4.0.4"
+  }
+}
