@@ -17,7 +17,7 @@ class DockSwarm {
 
     async pullImage(imageName) {
         let stream = await this.docker.pull(imageName, { authconfig: this.authconfig });
-        return followProgressPromise(stream);
+        return this.followProgressPromise(stream);
     }
 
     async updateServiceImage(serviceName, newImageName) {
