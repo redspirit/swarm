@@ -34,6 +34,7 @@ class DockSwarm {
             ...serviceInfo.Spec,
              TaskTemplate: {
                 ...serviceInfo.Spec.TaskTemplate,
+                ForceUpdate: 1,
                 ContainerSpec: {
                     ...serviceInfo.Spec.TaskTemplate.ContainerSpec,
                     Image: newImageName,
