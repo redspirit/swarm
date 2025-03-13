@@ -27,6 +27,8 @@ class DockSwarm {
 
         const service = this.docker.getService(serviceInfo.ID);
 
+        const newForceUpdate = (serviceInfo.TaskTemplate.ForceUpdate || 0) + 1;
+
         // Обновляем сервис с новым образом
         const updateOptions = {
             version: serviceInfo.Version.Index,
@@ -34,7 +36,7 @@ class DockSwarm {
             ...serviceInfo.Spec,
              TaskTemplate: {
                 ...serviceInfo.Spec.TaskTemplate,
-                ForceUpdate: 1,
+                ForceUpdate: newForceUpdate,
                 ContainerSpec: {
                     ...serviceInfo.Spec.TaskTemplate.ContainerSpec,
                     Image: newImageName,
