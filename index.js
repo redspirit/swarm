@@ -20,21 +20,35 @@ class DockSwarm {
         return this.followProgressPromise(stream);
     }
 
-    async updateServiceImage(serviceName, newImageName) {
+    async updateServiceImage(serviceName, newImageName, updateOrder) {
         const services = await this.docker.listServices();
         const serviceInfo = services.find((service) => service.Spec.Name === serviceName);
-        if (!serviceInfo) throw new Error(`Service with name "${serviceName}" not found.`);
+
+        if (!serviceInfo) {
+            throw new Error(`Service with name "${serviceName}" not found.`);
+        }
+
+        if (updateOrder !== undefined && !['start-first', 'stop-first'].includes(updateOrder)) {
+            throw new Error(
+                `Invalid updateOrder "${updateOrder}". Allowed values: "start-first", "stop-first".`,
+            );
+        }
 
         const service = this.docker.getService(serviceInfo.ID);
 
         const newForceUpdate = (serviceInfo.Spec.TaskTemplate.ForceUpdate || 0) + 1;
 
-        // Обновляем сервис с новым образом
         const updateOptions = {
             version: serviceInfo.Version.Index,
             authconfig: this.authconfig,
             ...serviceInfo.Spec,
-             TaskTemplate: {
+            ...(updateOrder !== undefined && {
+                UpdateConfig: {
+                    ...serviceInfo.Spec.UpdateConfig,
+                    Order: updateOrder,
+                },
+            }),
+            TaskTemplate: {
                 ...serviceInfo.Spec.TaskTemplate,
                 ForceUpdate: newForceUpdate,
                 ContainerSpec: {
@@ -43,6 +57,7 @@ class DockSwarm {
                 },
             },
         };
+
         return service.update(updateOptions);
     }
 }
